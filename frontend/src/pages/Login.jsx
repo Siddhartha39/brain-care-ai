@@ -64,11 +64,12 @@ export default function Login() {
             <p className="mt-4 text-slate-300">Secure enterprise access to MRI diagnostics, Grad-CAM heatmaps, and medical reports.</p>
           </div>
 
-          <div className="my-4 max-w-[260px] mx-auto">
+          <div className="my-6 w-full max-w-[420px] mx-auto flex items-center justify-center">
             <DotLottieReact
               src="https://lottie.host/325fe865-0c7e-4761-8678-33c468bfa022/AEQBhU2nIE.json"
               loop
               autoplay
+              className="w-full h-auto min-h-[260px] object-contain"
             />
           </div>
 

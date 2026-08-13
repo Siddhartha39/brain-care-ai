@@ -68,11 +68,12 @@ export default function Register() {
             <p className="mt-4 text-slate-300">Securely store your brain MRI scans, Grad-CAM maps, and reports in a private workspace.</p>
           </div>
 
-          <div className="my-4 max-w-[240px] mx-auto">
+          <div className="my-6 w-full max-w-[420px] mx-auto flex items-center justify-center">
             <DotLottieReact
               src="https://lottie.host/325fe865-0c7e-4761-8678-33c468bfa022/AEQBhU2nIE.json"
               loop
               autoplay
+              className="w-full h-auto min-h-[260px] object-contain"
             />
           </div>
 
