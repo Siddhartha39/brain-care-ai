@@ -2,6 +2,7 @@ services:
   - type: web
     name: braincare-ai-backend
     env: python
+    plan: free
     region: singapore
     rootDir: backend
     buildCommand: pip install -r requirements.txt
