@@ -9,6 +9,7 @@ from fastapi import APIRouter, File, Header, HTTPException, UploadFile, status
 from services.firebase_service import build_scan_payload, save_scan_record, verify_firebase_token
 from services.gemini_service import build_fallback_explanation
 from services.gradcam import generate_gradcam_image
+from services.image_utils import validate_mri_image
 from services.prediction import predict_image
 
 router = APIRouter()
@@ -23,19 +24,17 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 @router.post("/analyze")
 async def analyze_mri(
     file: UploadFile = File(...),
-    authorization: str | None = Header(default=None, alias="Authorization"),
+    authorization: str | None = Header(default=None),
 ):
-    if not file:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please upload a valid MRI image.")
-
-    if file.content_type not in ALLOWED_TYPES:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please upload a valid MRI image.")
-
     uid = verify_firebase_token(authorization, optional=True)
 
+    if file.content_type not in ALLOWED_TYPES:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported image file type. Please upload a JPG, JPEG, or PNG brain MRI image.",
+        )
+
     file_bytes = await file.read()
-    if len(file_bytes) == 0:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Please upload a valid MRI image.")
     if len(file_bytes) > MAX_FILE_SIZE:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Image is too large. Please upload a smaller file.")
 
@@ -44,8 +43,15 @@ async def analyze_mri(
     file_path = UPLOAD_DIR / filename
     file_path.write_bytes(file_bytes)
 
+    # Validate image to reject non-MRI screenshots, text tables, documents, or photos
+    is_valid, validation_msg = validate_mri_image(file_path)
+    if not is_valid:
+        file_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=validation_msg)
+
     try:
         prediction_result = predict_image(file_path)
+
         gradcam_path = generate_gradcam_image(file_path, prediction_result["prediction_index"])
         explanation = build_fallback_explanation(
             prediction_result["prediction"],

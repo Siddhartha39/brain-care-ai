@@ -24,8 +24,31 @@ def preprocess_image(image_path: str | Path):
     return image
 
 
-def save_image_from_array(array: np.ndarray, destination: str | Path):
-    image = Image.fromarray(np.uint8(array))
-    destination = Path(destination)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    image.save(destination)
+def validate_mri_image(image_path: str | Path) -> tuple[bool, str]:
+    try:
+        image = Image.open(image_path).convert("RGB")
+        arr = np.asarray(image, dtype=np.float32)
+
+        # 1. Grayscale Color Variance Check (MRI scans are grayscale)
+        r, g, b = arr[:, :, 0], arr[:, :, 1], arr[:, :, 2]
+        color_diff = float(np.mean(np.abs(r - g) + np.abs(g - b) + np.abs(b - r)))
+        if color_diff > 12.0:
+            return False, "The uploaded image contains non-grayscale colors (UI screenshot / document / photo). Please upload a valid Brain MRI scan."
+
+        # 2. Border Darkness Test (Brain MRI scans have dark background space at edges)
+        border_pixels = np.concatenate([
+            arr[:10, :, :], arr[-10:, :, :], arr[:, :10, :], arr[:, -10:, :]
+        ], axis=None)
+        border_mean = float(np.mean(border_pixels))
+        if border_mean > 130.0:
+            return False, "The uploaded image has a light/white background, which is characteristic of text documents or screenshots rather than an MRI scan."
+
+        # 3. High White Pixel Ratio Test (Text screenshots / web pages have large bright areas)
+        white_ratio = float(np.mean(np.mean(arr, axis=2) > 200))
+        if white_ratio > 0.40:
+            return False, "The uploaded file appears to be a text document or table screenshot. Please upload a valid brain MRI scan."
+
+        return True, "Valid Brain MRI scan."
+    except Exception as exc:
+        return False, f"Unable to process image file: {str(exc)}"
+
