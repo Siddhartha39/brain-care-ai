@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { AlertCircle, ArrowRight, BrainCircuit } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -62,10 +63,20 @@ export default function Login() {
             <h1 className="mt-8 text-3xl font-bold">Clinical Portal Login</h1>
             <p className="mt-4 text-slate-300">Secure enterprise access to MRI diagnostics, Grad-CAM heatmaps, and medical reports.</p>
           </div>
+
+          <div className="my-4 max-w-[260px] mx-auto">
+            <DotLottieReact
+              src="https://lottie.host/325fe865-0c7e-4761-8678-33c468bfa022/AEQBhU2nIE.json"
+              loop
+              autoplay
+            />
+          </div>
+
           <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5 text-sm text-slate-200">
             BrainCare AI Platform v2.4 | Enterprise Clinical Decision Support Engine.
           </div>
         </div>
+
 
         <div className="p-6 sm:p-10">
           <div className="mb-6">

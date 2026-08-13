@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { AlertCircle, BrainCircuit, CheckCircle2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -66,12 +67,22 @@ export default function Register() {
             <h1 className="mt-8 text-3xl font-bold">Create your profile</h1>
             <p className="mt-4 text-slate-300">Securely store your brain MRI scans, Grad-CAM maps, and reports in a private workspace.</p>
           </div>
+
+          <div className="my-4 max-w-[240px] mx-auto">
+            <DotLottieReact
+              src="https://lottie.host/325fe865-0c7e-4761-8678-33c468bfa022/AEQBhU2nIE.json"
+              loop
+              autoplay
+            />
+          </div>
+
           <div className="rounded-2xl border border-slate-700 bg-slate-800 p-5 text-sm text-slate-200">
-            <div className="mb-3 flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-4 w-4" /> Protected account access</div>
-            <div className="mb-3 flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-4 w-4" /> Private scan history</div>
+            <div className="mb-2 flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-4 w-4" /> Protected account access</div>
+            <div className="mb-2 flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-4 w-4" /> Private scan history</div>
             <div className="flex items-center gap-2 text-emerald-400"><CheckCircle2 className="h-4 w-4" /> Clinical decision support</div>
           </div>
         </div>
+
 
         <div className="p-6 sm:p-10">
           <div className="mb-6">
