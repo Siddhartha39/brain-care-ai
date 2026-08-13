@@ -71,8 +71,8 @@ export default function Result() {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-600">AI-assisted MRI Analysis</p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900">Prediction: {classLabels[result.prediction] || result.prediction}</h1>

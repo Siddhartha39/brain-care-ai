@@ -58,7 +58,7 @@ export default function Analyze() {
 
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       <div>
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary-600">Analyze MRI</p>
         <h1 className="mt-2 text-3xl font-bold text-slate-900">Upload a brain scan</h1>

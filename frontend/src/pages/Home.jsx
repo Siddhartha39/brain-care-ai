@@ -17,8 +17,8 @@ const features = [
 
 export default function Home() {
   return (
-    <div>
-      <section className="gradient-bg px-4 py-16 sm:px-6 lg:px-8">
+    <div className="animate-fade-in">
+      <section className="gradient-bg px-4 py-12 sm:py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
           <div>
             <div className="mb-5 inline-flex rounded-full border border-indigo-200 bg-indigo-100 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-800">

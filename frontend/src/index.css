@@ -5,7 +5,7 @@
 :root {
   color: #0f172a;
   background: #f8fafc;
-  font-family: Inter, 'Segoe UI', sans-serif;
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light;
@@ -13,6 +13,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -20,6 +21,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8fbff 0%, #eff4ff 100%);
+  overflow-x: hidden;
 }
 
 * {
@@ -28,20 +30,22 @@ body {
 
 button, input, select {
   font: inherit;
+  transition: all 0.2s ease-in-out;
 }
 
 img {
   max-width: 100%;
+  height: auto;
   display: block;
 }
 
 .card {
-  @apply bg-white border border-slate-200 rounded-2xl shadow-soft;
+  @apply bg-white border border-slate-200/80 rounded-2xl shadow-soft transition-all duration-300 hover:shadow-md hover:border-slate-300;
 }
-
 
 a {
   text-decoration: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .gradient-bg {
@@ -58,5 +62,23 @@ a {
 .progress-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #1d6ef2, #22c7f5);
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Mobile Friendly Utilities */
+@media (max-width: 640px) {
+  .card {
+    border-radius: 1rem;
+  }
+}
+
