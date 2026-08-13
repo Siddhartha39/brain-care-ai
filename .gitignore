@@ -1,0 +1,29 @@
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Python / backend
+backend/venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/secrets/*.json
+
+# Project runtime artifacts
+backend/uploads/
+backend/results/
+
+# OS/editor
+.DS_Store
+
+# Keep the model tracked
+!backend/model/
+!backend/model/brain_tumor_model.keras
