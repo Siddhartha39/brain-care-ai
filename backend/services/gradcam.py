@@ -49,8 +49,9 @@ def _find_last_conv_layer(model):
 def generate_gradcam_image(image_path: str | Path, prediction_index: int):
     model = load_model()
     image = Image.open(image_path).convert("RGB").resize((224, 224))
-    image_array = np.asarray(image, dtype=np.float32) / 255.0
+    image_array = (np.asarray(image, dtype=np.float32) / 127.5) - 1.0
     input_tensor = np.expand_dims(image_array, axis=0)
+
 
 
     last_conv_layer_name = _find_last_conv_layer(model)

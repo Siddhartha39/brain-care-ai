@@ -19,9 +19,10 @@ def load_rgb_image(image_path: str | Path):
 
 def preprocess_image(image_path: str | Path):
     image = load_rgb_image(image_path)
-    image = image.astype(np.float32) / 255.0
+    image = (image.astype(np.float32) / 127.5) - 1.0
     image = np.expand_dims(image, axis=0)
     return image
+
 
 
 
