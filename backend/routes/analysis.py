@@ -7,7 +7,7 @@ from pathlib import Path
 from fastapi import APIRouter, File, Header, HTTPException, UploadFile, status
 
 from services.firebase_service import build_scan_payload, save_scan_record, verify_firebase_token
-from services.gemini_service import build_fallback_explanation
+from services.gemini_service import generate_explanation
 from services.gradcam import generate_gradcam_image
 from services.image_utils import validate_mri_image
 from services.prediction import predict_image
@@ -53,11 +53,13 @@ async def analyze_mri(
         prediction_result = predict_image(file_path)
 
         gradcam_path = generate_gradcam_image(file_path, prediction_result["prediction_index"])
-        explanation = build_fallback_explanation(
+        explanation = generate_explanation(
             prediction_result["prediction"],
             prediction_result["confidence"],
             prediction_result["probabilities"],
+            image_path=file_path,
         )
+
 
         original_image_path = f"/uploads/{filename}"
         gradcam_image_path = f"/results/{file_path.stem}_gradcam.jpg"
