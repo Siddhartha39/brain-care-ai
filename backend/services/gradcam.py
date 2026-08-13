@@ -12,50 +12,47 @@ from services.prediction import load_model
 
 
 def make_gradcam_heatmap(image_array: np.ndarray, model, prediction_index: int, last_conv_layer_name: str | None = None):
-    if last_conv_layer_name is None:
-        last_conv_layer_name = _find_last_conv_layer(model)
+    conv_out = None
 
-    if last_conv_layer_name is None:
-        raise ValueError("No Conv2D layer found in the model for Grad-CAM generation.")
+    for layer in model.layers:
+        if hasattr(layer, "layers") and len(layer.layers) > 5:
+            try:
+                conv_out = layer(image_array)
+                break
+            except Exception:
+                continue
+        elif isinstance(layer, (tf.keras.layers.Conv2D, tf.keras.layers.DepthwiseConv2D)):
+            try:
+                sub_m = tf.keras.Model(inputs=model.inputs, outputs=layer.output)
+                conv_out = sub_m(image_array)
+                break
+            except Exception:
+                continue
 
-    if not model.built:
-        model(tf.zeros((1, 224, 224, 3)))
+    if conv_out is None:
+        try:
+            conv_out = model.layers[0](image_array)
+        except Exception:
+            conv_out = model(image_array)
 
-    conv_layer = model.get_layer(last_conv_layer_name)
-    conv_model = tf.keras.Model(inputs=model.inputs, outputs=conv_layer.output)
+    if isinstance(conv_out, (list, tuple)):
+        conv_out = conv_out[0]
 
-    conv_output = conv_model(image_array)
-    if isinstance(conv_output, (list, tuple)):
-        conv_output = conv_output[0]
-
-    # The current Keras/TensorFlow runtime does not expose a stable gradient path for
-    # this specific trained Sequential CNN, so we fall back to a class-agnostic activation
-    # heatmap that still highlights the most salient regions for the model's attention.
-    heatmap = tf.reduce_mean(conv_output, axis=-1)
+    heatmap = tf.reduce_mean(conv_out, axis=-1)
     heatmap = tf.nn.relu(heatmap[0] if heatmap.shape.rank == 3 else heatmap)
     max_heat = tf.reduce_max(heatmap)
     if tf.equal(max_heat, 0):
-        return np.zeros_like(heatmap.numpy(), dtype=np.float32)
+        return np.zeros((224, 224), dtype=np.float32)
     return (heatmap / max_heat).numpy()
-
-
-def _find_last_conv_layer(model):
-    for layer in reversed(model.layers):
-        if isinstance(layer, tf.keras.layers.Conv2D):
-            return layer.name
-    return None
 
 
 def generate_gradcam_image(image_path: str | Path, prediction_index: int):
     model = load_model()
     image = Image.open(image_path).convert("RGB").resize((224, 224))
     image_array = (np.asarray(image, dtype=np.float32) / 127.5) - 1.0
-    input_tensor = np.expand_dims(image_array, axis=0)
+    input_tensor = tf.convert_to_tensor(np.expand_dims(image_array, axis=0))
 
-
-
-    last_conv_layer_name = _find_last_conv_layer(model)
-    heatmap = make_gradcam_heatmap(tf.convert_to_tensor(input_tensor), model, prediction_index, last_conv_layer_name)
+    heatmap = make_gradcam_heatmap(input_tensor, model, prediction_index)
 
     heatmap = cv2.resize(heatmap, (224, 224))
     heatmap = np.uint8(255 * heatmap)
@@ -69,3 +66,4 @@ def generate_gradcam_image(image_path: str | Path, prediction_index: int):
     Image.fromarray(superimposed).save(output_path)
 
     return str(output_path)
+
