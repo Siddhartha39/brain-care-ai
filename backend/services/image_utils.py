@@ -19,9 +19,10 @@ def load_rgb_image(image_path: str | Path):
 
 def preprocess_image(image_path: str | Path):
     image = load_rgb_image(image_path)
-    image = image.astype(np.float32)
+    image = image.astype(np.float32) / 255.0
     image = np.expand_dims(image, axis=0)
     return image
+
 
 
 def validate_mri_image(image_path: str | Path) -> tuple[bool, str]:

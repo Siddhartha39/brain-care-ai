@@ -15,7 +15,18 @@ def generate_explanation(prediction: str, confidence: float, probabilities: dict
 
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+
+        model = None
+        for m_name in ["gemini-2.0-flash", "gemini-1.5-flash-latest", "gemini-1.5-pro", "gemini-pro"]:
+            try:
+                model = genai.GenerativeModel(m_name)
+                break
+            except Exception:
+                continue
+
+        if not model:
+            model = genai.GenerativeModel("gemini-2.0-flash")
+
 
         prompt = (
             "You are an expert Clinical Decision Support AI specialist for BrainCare AI System. "
