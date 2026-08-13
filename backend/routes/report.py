@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from fastapi import APIRouter, Header, HTTPException
 from fastapi.responses import FileResponse
 
@@ -9,8 +10,19 @@ from services.report import generate_pdf_report
 router = APIRouter()
 
 
+@router.get("/documentation/pdf")
+async def download_documentation_pdf():
+    doc_path = Path(__file__).resolve().parents[1] / "results" / "BrainCare_AI_Full_Documentation.pdf"
+    if not doc_path.exists():
+        from generate_documentation_pdf import create_braincare_documentation_pdf
+        doc_path.parent.mkdir(exist_ok=True, parents=True)
+        create_braincare_documentation_pdf(str(doc_path))
+    return FileResponse(str(doc_path), media_type="application/pdf", filename="BrainCare_AI_Full_Documentation.pdf")
+
+
 @router.get("/reports/{scan_id}/pdf")
 async def generate_report_pdf(scan_id: str, authorization: str | None = Header(default=None, alias="Authorization")):
+
     try:
         uid = verify_firebase_token(authorization, optional=True)
         scan = get_user_scan(uid, scan_id)
@@ -32,3 +44,14 @@ async def generate_report_pdf(scan_id: str, authorization: str | None = Header(d
         raise
     except Exception as exc:
         raise HTTPException(status_code=500, detail="Unable to generate PDF report.") from exc
+
+
+@router.get("/docs/download/pdf")
+async def download_documentation_pdf():
+    doc_path = Path(__file__).resolve().parents[1] / "results" / "BrainCare_AI_Full_Documentation.pdf"
+    if not doc_path.exists():
+        from generate_documentation_pdf import create_braincare_documentation_pdf
+        doc_path.parent.mkdir(exist_ok=True, parents=True)
+        create_braincare_documentation_pdf(str(doc_path))
+    return FileResponse(str(doc_path), media_type="application/pdf", filename="BrainCare_AI_Full_Documentation.pdf")
+
